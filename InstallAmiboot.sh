@@ -39,6 +39,24 @@ case $(uname -m) in
     ;;
 esac
 
+debian_version=$(cat /etc/debian_version)
+major_version=${debian_version%%.*}
+
+case $major_version in
+    12)
+    debian_codename=bookworm
+    ;;
+
+    13)
+    debian_codename=trixie
+    ;;
+
+    *)
+    echo "This OS version is not supported."
+    exit
+    ;;
+esac
+
 
 install_package ()
 {
@@ -51,6 +69,26 @@ install_package ()
 
     fi
 }
+
+create_config_stub ()
+{
+    echo "write_logfile=yes" > $1
+    echo "rctrl_as_ramiga=yes" >> $1
+    echo "disable_shutdown_button=no" >> $1
+    echo "gui_theme=Default.theme" >> $1
+    echo "config_path=${uae_config_path}/" >> $1
+    echo "retroarch_config=${uae_config_path}/retroarch.cfg" >> $1
+    echo "whdload_arch_path=${base_path}/lha/" >> $1
+    echo "floppy_path=${adf_path}/" >> $1
+    echo "harddrive_path=${hdf_path}/" >> $1
+    echo "cdrom_path=${cdrom_path}/" >> $1
+    echo "logfile_path=${log_path}/amiberry.log" >> $1
+    echo "rom_path=${rom_path}/" >> $1
+    echo "rp9_path=${base_path}/rp9/" >> $1
+    echo "savestate_dir=${base_path}/savestates/" >> $1
+    echo "screenshot_dir=${base_path}/screenshots/" >> $1
+}
+
 
 echo "WARNING!"
 echo "${application_name} should ONLY be installed on a clean, minimal Debian Linux system."
@@ -85,11 +123,18 @@ install_package plymouth
 install_package unzip
 install_package curl
 install_package inotify-tools
-install_package libegl1  # required?
+install_package libegl1
 # GGG need to get correct version from apt!
 install_package libgegl-common
 # install_package libgegl-0.4-0
 install_package $(apt-cache pkgnames libgegl-0)
+
+if [[ $debian_codename == "trixie" ]]; then
+
+    # Additional packages required for Trixie
+    install_package libgl1
+
+fi
 
 
 # Create application folders and install files
@@ -104,6 +149,7 @@ cp -R "${install_files_path}/application/"* "${application_path}/"
 cp -R "${install_files_path}/conf/"* "${uae_config_path}/"
 cp -R "${install_files_path}/floppies/"* "${adf_path}/"
 cp -R "${install_files_path}/harddrives/"*.hdf "${hdf_path}/"
+cp -R "${install_files_path}/roms/"*.* "${rom_path}/"
 
 for archive in "${install_files_path}/harddrives/"*.zip; do
 
@@ -181,7 +227,7 @@ if [[ ! $(which amiberry) ]]; then
 
         if [[ ! -f $amiberry_zipfile ]]; then
 
-            wget_url=$(curl -s https://api.github.com/repos/BlitterStudio/Amiberry/releases/latest | grep browser_download_url.*debian-bookworm-${arch} | cut -d : -f 2,3 | tr -d " \"")
+            wget_url=$(curl -s https://api.github.com/repos/BlitterStudio/Amiberry/releases/latest | grep browser_download_url.*debian-${debian_codename}-${arch} | cut -d : -f 2,3 | tr -d " \"")
             echo "Fetching Amiberry installer from ${wget_url}"
             write_log install "Fetching Amiberry installer from ${wget_url}"
 
@@ -224,17 +270,23 @@ fi
 
 if [[ $(which amiberry) ]]; then
 
-    cp -r /usr/share/amiberry/roms/* "${rom_path}/"
+    # Now using roms matched to AROS HD image. Different versions may break AROS.
+    # cp -r /usr/share/amiberry/roms/* "${rom_path}/"
+
     chmod -R 777 "${base_path}"
 
-    if [[ $release && ! $(grep "${application_path}/LaunchAmiberry.sh" /root/.profile) ]]; then
+    mkdir -p "/root/.config/amiberry"
+    create_config_stub "/root/.config/amiberry/amiberry.conf"
+    create_config_stub "${uae_config_path}/amiberry.conf"
+
+    if [[ $release && ! $(grep "${application_path}/StartAmiboot.sh" /root/.profile) ]]; then
 
         # Warning. Running from profile as new process (&) may be nice but will break the ctrl+c to exit
         write_log install "Adding launcher to root/.profile"
         echo "" >> /root/.profile
         echo "# Added by amiboot" >> /root/.profile
         echo "clear" >> /root/.profile
-        echo "${application_path}/LaunchAmiberry.sh" >> /root/.profile
+        echo "${application_path}/StartAmiboot.sh" >> /root/.profile
 
     fi
 
