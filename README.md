@@ -32,7 +32,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
     - Select a local Debian mirror when prompted. This ensures software sources are configured. 
     - Please see Debian Linux documentation if required.
 2. Boot and login as root.
-3. Enter the commands below to downlaod and run the Installer. 
+3. Enter the commands below to downlaod and run the Installer:
 
     wget https://raw.githubusercontent.com/de-nugan/AmiBootEnv/master/Install.sh
 
