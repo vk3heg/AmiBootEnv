@@ -36,7 +36,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 
     wget https://raw.githubusercontent.com/de-nugan/AmiBootEnv/master/Install.sh
 
-    bash Install.sh
+    bash ./Install.sh
 
 4. READ the warning message, and follow the prompts to install. 
 5. Select 'YES' to install rEFInd if prompted, and 'r' to reboot when complete.
