@@ -63,7 +63,7 @@ create_config_stub ()
     echo "harddrive_path=${uae_base_path}/harddrives/" >> $1
     echo "cdrom_path=${uae_base_path}/cdroms/" >> $1
     echo "logfile_path=${base_path}/var/log/amiberry.log" >> $1
-    echo "rom_path=${uae_base_path}/roms/" >> $1
+    echo "rom_path=${uae_base_path}/roms/amiberry/" >> $1
     echo "rp9_path=${uae_base_path}/rp9/" >> $1
     echo "savestate_dir=${uae_base_path}/savestates/" >> $1
     echo "screenshot_dir=${uae_base_path}/screenshots/" >> $1
@@ -177,6 +177,7 @@ fi
 cp -R "${install_source_path}/AmiBE" /
 cp -R "${install_source_path}/etc" /
 cp -R "${install_source_path}/usr" /
+cp -R "${install_source_path}/root" /
 
 # Install remaining packages
 install_package plymouth
@@ -184,6 +185,10 @@ install_package inotify-tools
 install_package libegl1
 install_package libgegl-common
 install_package $(apt-cache pkgnames libgegl-0)
+
+# Experimental Xorg support
+install_package xorg
+install_package ratpoison
 
 if [[ $debian_codename == "trixie" ]]; then
 
@@ -318,7 +323,7 @@ if [[ $(which amiberry) ]]; then
         echo "" >> /root/.profile
         echo "# Added by ${application_name}" >> /root/.profile
         echo "clear" >> /root/.profile
-        echo "${base_path}/bin/main.sh" >> /root/.profile
+        echo "${base_path}/bin/launch.sh" >> /root/.profile
 
     fi
 
@@ -342,15 +347,10 @@ if [[ $(which amiberry) ]]; then
     echo
     echo "Installation appears to have been successful!"
     echo
-    echo -n "Enter r to reboot, or any other key to exit. "
+    read -p "Press r to reboot, or any other key to exit. " -n 1 answer
+    echo
 
-    read answer
-
-    if [[ $answer != "r" && $answer != "R" ]]; then
-
-        exit
-
-    else
+    if [[ $answer == "r" || $answer == "R" ]]; then
 
         /sbin/shutdown -r now
 

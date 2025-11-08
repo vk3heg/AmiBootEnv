@@ -1,10 +1,21 @@
 #!/bin/bash
 
+# Options
+
+# Use XOrg
+# This will run Amiberry under Xorg
+# This can fix some performance issues, but can make it harder to scale emulation to full screen.
+# For best results set display type to "Fullscreen" for native modes and "Windowed" for RTG
+#
+#abe_use_xorg=1
+
+
+
 # Config vars and common functions for amiboot scripts
 # Paths should not end with a slash
 
 release=1
-application_version="0.4.2"
+application_version="0.4.3"
 
 # Installation vars
 application_name_cc="AmiBootEnv"

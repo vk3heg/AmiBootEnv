@@ -167,17 +167,35 @@ while [[ 1 ]]; do
     launch_amiberry "${1}"
 
     clear
-    echo "ctrl-c to quit to terminal."
-    echo -n "Restarting in "
+    echo "[T]erminal"
+    echo "[R]estart"
+    echo "[S]hutdown"
 
     i=3
+    key=
+
+    echo -en "\n${application_name} will restart in ${i}.."
 
     while [[ $i -gt 0 ]]; do
-        echo -en "${i}..\b\b\b"
-        sleep 1
+        read -n 1 -t 1 key
+
+        if [[ $key == 't' ]]; then
+            echo -e "\n\n"
+            exit
+        elif [[ $key == 'r' ]]; then
+            /sbin/shutdown -r now
+        elif [[ $key == 's' ]]; then
+            /sbin/shutdown -h now
+        fi
+
         ((i--))
+        echo -en "\b\b\b${i}.."
     done
 
 done
+
+
+
+
 
 

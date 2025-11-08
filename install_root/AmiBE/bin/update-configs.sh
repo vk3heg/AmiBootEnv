@@ -25,7 +25,7 @@ update_config_file()
     grep -v "amiberry.hardfile_path=" ${1} > "${1}.temp" && mv -f "${1}.temp" "${1}"
     grep -v "amiberry.cd_path=" ${1} > "${1}.temp" && mv -f "${1}.temp" "${1}"
 
-    echo "amiberry.rom_path=${rom_path}/" >> ${1}
+    echo "amiberry.rom_path=${rom_path}/amiberry/" >> ${1}
     echo "amiberry.floppy_path=${adf_path}/" >> ${1}
     echo "amiberry.hardfile_path=${hdf_path}/" >> ${1}
     echo "amiberry.cd_path=${cdrom_path}/" >> ${1}
