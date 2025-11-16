@@ -15,7 +15,7 @@
 # Paths should not end with a slash
 
 release=1
-application_version="0.4.3"
+application_version="0.5.3"
 
 # Installation vars
 application_name_cc="AmiBootEnv"

@@ -228,7 +228,29 @@ if [[ -d "/boot/efi/EFI" ]]; then
 
     fi
 
+    # Install boot theme and config
     cp -R "${install_source_path}/boot" /
+
+    # Patch with RefindPlus due to tools line bug in rEFInd
+    wget_url=$(curl -s https://api.github.com/repos/RefindPlusRepo/RefindPlus/releases/latest | grep browser_download_url.* | cut -d : -f 2,3 | tr -d " \"")
+    wget "${wget_url}"
+    refindplus_zipfile=$(ls -vr ./*RefindPlus*.zip | head -1)
+
+    if [[ -f $refindplus_zipfile ]]; then
+
+        unzip -o $refindplus_zipfile
+
+        if [[ -f "${refindplus_zipfile%.zip}/x64_RefindPlus_REL.efi" ]]; then
+
+            mv /boot/efi/EFI/refind/refind_x64.efi /boot/efi/EFI/refind/refind_x64.efi.orig
+            cp "${refindplus_zipfile%.zip}/x64_RefindPlus_REL.efi" /boot/efi/EFI/refind/refind_x64.efi
+
+            # Fix the graphics mode bootsplash icon
+            cp /usr/share/plymouth/themes/amiboot/zzz.png /boot/efi/EFI/refind/icons/os_debian.png
+
+        fi
+
+    fi
 
 elif [[ $arch == "amd64" ]]; then
 
