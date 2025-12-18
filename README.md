@@ -74,7 +74,7 @@ Include this configuration in the system boot menu using icon "file.png".
 
 ## Boot Icons ##
 
-The following icons are included under /AmiBE/assets/icons 
+The following icons are included under /AmiBE/assets/booticons 
 
 - os_amiga_lefty.png
 - os_amiga_checkmark.png
