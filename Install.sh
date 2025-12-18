@@ -338,7 +338,7 @@ if [[ $(which amiberry) ]]; then
     create_config_stub "/root/.config/amiberry/amiberry.conf"
     create_config_stub "${base_path}/UAE/conf/amiberry.conf"
 
-    if [[ ! $(grep "${base_path}/bin/main.sh" /root/.profile) ]]; then
+    if [[ ! $(grep "${base_path}/bin/launch.sh" /root/.profile) ]]; then
 
         # Warning. Running from profile as new process (&) may be nice but will break the ctrl+c to exit
         #write_log install "Adding launcher to root/.profile"
