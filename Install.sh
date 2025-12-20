@@ -185,6 +185,7 @@ install_package inotify-tools
 install_package libegl1
 install_package libgegl-common
 install_package $(apt-cache pkgnames libgegl-0)
+install_package alsa-utils
 
 # Experimental Xorg support
 install_package xorg
@@ -197,6 +198,8 @@ if [[ $debian_codename == "trixie" ]]; then
 
 fi
 
+# Unmute analog audio Master out
+amixer sset Master 80% unmute
 
 for archive in "${uae_base_path}/harddrives/"*.zip; do
 
