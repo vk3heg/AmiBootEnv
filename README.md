@@ -51,6 +51,18 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
     - Hit F12 to open the Amiberry GUI, go to Paths and select "Rescan Paths" to include the new ROMs in Amiberry.
 
 
+## Upgrading ##
+
+1. Quit Amiberry and press 't' for terminal.
+2. Remove previous installation files from /root/ directory:
+
+    rm *.*
+
+3. Repeat the wget and bash commands at Installation step 3. 
+
+NB: This will overwrite options.h and the included Amiberry configs. Additional user configs should not be affected. 
+
+
 ## Amiberry Configuration ##
 
 AmiBootEnv looks for pre-launch instructions in the Description field of the selected Amiberry configuration as follows:
