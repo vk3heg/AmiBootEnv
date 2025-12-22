@@ -63,7 +63,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 
 3. Repeat the wget and bash commands at Installation step 3. 
 
-NB: This will overwrite options.h and the included Amiberry configs. Additional user configs should not be affected. 
+NB: This will overwrite options.sh and the included Amiberry configs. Additional user configs should not be affected. 
 
 
 
