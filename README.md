@@ -9,6 +9,7 @@ AmiBootEnv's goal differs in that it is mainly focussed on providing a base (emu
 AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBridge and my own obsession with putting an Amiga on everything.
 
 
+
 ## Features ##
 
 - Boots directly into emulation without an X Windows environment.
@@ -18,6 +19,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 - Integrates the rEFInd boot manager on UEFI systems to provide an Amiga boot selector.
 - Includes a basic AROS system with Directory Opus for importing ROMs, ADFs, HDFs etc. from removable storage "The Amiga Way".
 - Based on Debian Linux and the excellent Amiberry emulator.
+
 
 
 ## Installation ##
@@ -51,6 +53,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
     - Hit F12 to open the Amiberry GUI, go to Paths and select "Rescan Paths" to include the new ROMs in Amiberry.
 
 
+
 ## Upgrading ##
 
 1. Quit Amiberry and press 't' for terminal.
@@ -61,6 +64,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 3. Repeat the wget and bash commands at Installation step 3. 
 
 NB: This will overwrite options.h and the included Amiberry configs. Additional user configs should not be affected. 
+
 
 
 ## Amiberry Configuration ##
@@ -84,6 +88,7 @@ Drive number can be 0, 1, 2 or 3. GW cable pos can be A or B. Only a single phys
 Include this configuration in the system boot menu using icon "file.png".
 
 
+
 ## Boot Icons ##
 
 The following icons are included under /AmiBE/assets/booticons 
@@ -95,6 +100,7 @@ The following icons are included under /AmiBE/assets/booticons
 
 Icons should be 128 x 128 PNG format with transparency.
 Icon filenames must not contain spaces.
+
 
 
 ## WARNING! ##
