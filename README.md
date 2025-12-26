@@ -22,7 +22,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 
 
 
-## Installation ##
+## Installation (PC) ##
 
 1. Install a minimal Debian x86_64 (amd64) system
     - Supported versions are 12 (bookworm) and 13 (trixie).
@@ -51,6 +51,39 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
     - Copy files from under "Volumes:" to the required locations in the "UAE:" drive.
     - The included A500 and A1200 configs will look for roms named kick13.rom and kick31.rom respectively. 
     - Hit F12 to open the Amiberry GUI, go to Paths and select "Rescan Paths" to include the new ROMs in Amiberry.
+
+
+
+## Installation (Raspberry Pi) ##
+
+1. Use the Raspberry Pi Imager to create a Raspberry Pi OS Lite (64-bit) Debian Trixie image with no desktop environment. 
+    - Create a regular user, and include any customisations as required. 
+2. Boot the image and login as the regular (non-root) user. Enter the command below to set a password for the root account:
+
+    sudo passwd root
+
+3. Exit and login as root.
+4. Enter the commands below to download and run the Installer:
+
+    wget https://raw.githubusercontent.com/de-nugan/AmiBootEnv/master/Install.sh
+
+    bash ./Install.sh
+
+5. Press 'r' to reboot when complete.
+6. The system will reboot into AROS. To import system ROMs or other files, copy to a USB drive and insert.
+    - The USB drive should be accessible under the "Volumes:" drive in AROS.
+    - Copy files from under "Volumes:" to the required locations in the "UAE:" drive.
+    - The included A500 and A1200 configs will look for roms named kick13.rom and kick31.rom respectively. 
+    - Hit F12 to open the Amiberry GUI, go to Paths and select "Rescan Paths" to include the new ROMs in Amiberry.
+    - To change the default config or enable Amiberry-Lite, Quit Amiberry and hit 'e' to edit user options. When finished, Ctrl+S to save and Ctrl+Q to quit the editor. 
+
+### CAVEATS on Raspberry Pi ###
+    
+    - Raspberry Pi does not support the rEFInd boot selector, there is no boot-time Amiga config selection available.
+    - AmiBootEnv will currently only launch the default config specified in the user options file. 
+    - Raspberry Pi 5 or better is recommended for the best emulation experience. 
+    - AROS on Raspberry Pi is sloooooow. 
+    - Amiberry-Lite is recommended for ARM. Due to issues with booting AROS, regular Amiberry is still the default. 
 
 
 
