@@ -11,6 +11,12 @@
 abe_default_config=AROS
 
 
+# Use Amiberry-Lite
+# Amiberry-Lite may perform better on some systems, eg. ARM, RPi and older PCs
+#
+#abe_use_amiberry_lite=1
+
+
 # Default action when Amiberry exits
 # Valid options are: respawn, reboot, shutdown, shutdown_on_clean
 # shutdown_on_clean will attempt to confirm Amiberry exited cleanly before shutting down, otherwise respawn if it crashed.
@@ -23,7 +29,7 @@ abe_amiberry_exit_action=respawn
 # Timout counter when Amiberry exits (seconds)
 # After timeout lapses, perform exit action
 #
-abe_amiberry_exit_timeout=3
+abe_amiberry_exit_timeout=5
 
 
 # Amiberry launch delay (seconds)
@@ -56,11 +62,11 @@ abe_log_maxlines=2000
 # Set a preferred Xorg screen mode if lower than the native mode.
 # Performance at 4K and above may be poor, so lower res may help.
 # Below are example modes. Run xrandr in X terminal to see valid modes for your display.
+# 16:9 Screen Ratio: 1920x1080 1280x720
+# 5:4 Screen Ratio: 1280x1024
+# 4:3 Screen Ratio: 1024x768
 #
 #abe_xorg_mode=1920x1080
-#abe_xorg_mode=1280x720
-#abe_xorg_mode=1280x1024
-#abe_xorg_mode=1024x768
 
 
 # Set the xrandr output here if the above resolution is not being set correctly.

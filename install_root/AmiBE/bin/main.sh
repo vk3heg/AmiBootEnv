@@ -23,6 +23,7 @@ mkdir -p "${uae_base_path}" 2>/dev/null
 
 launch_amiberry()
 {
+    # Find the config
     if [[ -f "${uae_config_path}/${1}.uae" ]]; then
 
         config_file="${uae_config_path}/${1}.uae"
@@ -60,24 +61,30 @@ launch_amiberry()
 
     fi
 
+    # Set the binary
+    if [[ ${abe_use_amiberry_lite} ]]; then
 
-    if [[ -f "${config_file}" ]]; then
-
-        # GGG It would be nice to be able to get an exit code or hint from the log file here
-        # and shut down the PC if Amiberry was quit from within the guest (eg. AROS Wanderer menu > Shut down)
-        write_log "Starting amiberry with config ${config_file}"
-
-        amiberry -f "${config_file}" -s use_gui=no
+        amiberry=amiberry-lite
 
     else
 
-        write_log "Starting amiberry (no config)"
-
-        amiberry
+        amiberry=amiberry
 
     fi
 
+    write_log "Starting ${amiberry} with config [${config_file}]"
+
+    if [[ -f "${config_file}" ]]; then
+
+        $amiberry -f "${config_file}" -s use_gui=no
+
+    else
+
+        $amiberry
+
+    fi
 }
+
 
 write_log "${application_name} ${application_version}"
 
@@ -118,7 +125,6 @@ for file in "${volumes_path}/"*.info; do
     fi
 
 done
-
 
 
 # Mount and catalog block devices

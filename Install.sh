@@ -69,6 +69,53 @@ create_config_stub ()
     echo "screenshot_dir=${uae_base_path}/screenshots/" >> $1
 }
 
+install_amiberry_flavour ()
+{
+    # package_name must be amiberry or amiberry-lite
+    package_name=${1:-"amiberry"}
+    debfile=$(ls -vr ./${package_name}_*${arch}.deb | head -1)
+
+    if [[ ! -f $debfile ]]; then
+
+        zipfile=$(ls -vr ./${package_name}-v*${arch}.zip | head -1)
+
+        if [[ ! -f $zipfile ]]; then
+
+            wget_url=$(curl -s https://api.github.com/repos/BlitterStudio/${package_name}/releases/latest | grep browser_download_url.*debian-${debian_codename}-${arch} | cut -d : -f 2,3 | tr -d " \"")
+            echo "Fetching ${package_name} installer from ${wget_url}"
+
+            wget "${wget_url}"
+
+            zipfile=$(ls -vr ./${package_name}-v*${arch}.zip | head -1)
+
+        fi
+
+        if [[ -f $zipfile ]]; then
+
+            unzip -o $zipfile
+
+        else
+
+            echo "${package_name} download failed."
+
+        fi
+
+        debfile=$(ls -vr ./${package_name}_*${arch}.deb | head -1)
+
+    fi
+
+    if [[ -f $debfile ]]; then
+
+        install_package "${debfile}"
+
+    else
+
+        echo "${package_name} installer not found! Please download and install manually."
+
+    fi
+}
+
+
 # Installation
 
 cat 1>&2 << 'EOB'
@@ -284,59 +331,21 @@ if [[ $(which plymouth-set-default-theme) ]]; then
 fi
 
 
-# Now the main event - install Amiberry if required
+# Now the main event - install Amiberries if required
 if [[ ! $(which amiberry) ]]; then
 
-    #pushd "${install_files_path}"
-    amiberry_installer=$(ls -vr ./amiberry*${arch}.deb | head -1)
+    install_amiberry_flavour amiberry
 
-    if [[ ! -f $amiberry_installer ]]; then
+fi
 
-        amiberry_zipfile=$(ls -vr ./amiberry*${arch}.zip | head -1)
+if [[ ! $(which amiberry-lite) ]]; then
 
-        if [[ ! -f $amiberry_zipfile ]]; then
+    install_amiberry_flavour amiberry-lite
 
-            wget_url=$(curl -s https://api.github.com/repos/BlitterStudio/Amiberry/releases/latest | grep browser_download_url.*debian-${debian_codename}-${arch} | cut -d : -f 2,3 | tr -d " \"")
-            echo "Fetching Amiberry installer from ${wget_url}"
-
-            wget "${wget_url}"
-
-            amiberry_zipfile=$(ls -vr ./amiberry*${arch}.zip | head -1)
-
-        fi
-
-        if [[ -f $amiberry_zipfile ]]; then
-
-            unzip -o ./amiberry*${arch}.zip
-
-        else
-
-            #write_log install "Amiberry installer archive not found!"
-            #write_log install "URL = ${wget_url}"
-            echo "Amiberry download failed."
-
-        fi
-
-        amiberry_installer=$(ls -vr ./amiberry*${arch}.deb | head -1)
-
-    fi
-
-    if [[ -f $amiberry_installer ]]; then
-
-        install_package $amiberry_installer
-
-    else
-
-        #write_log install "Amiberry installer not found! Please download and install manually."
-        echo "Amiberry installer not found! Please download and install manually."
-
-    fi
-
-    #pushd -1
 fi
 
 
-if [[ $(which amiberry) ]]; then
+if [[ $(which amiberry) || $(which amiberry-lite) ]]; then
 
     # Now using roms matched to AROS HD image. Different versions may break AROS.
     # cp -r /usr/share/amiberry/roms/* "${rom_path}/"
@@ -344,8 +353,18 @@ if [[ $(which amiberry) ]]; then
     chmod -R 777 "${base_path}"
 
     mkdir -p "/root/.config/amiberry"
+    mkdir -p "/root/.config/amiberry-lite"
     create_config_stub "/root/.config/amiberry/amiberry.conf"
+    create_config_stub "/root/.config/amiberry-lite/amiberry.conf"
     create_config_stub "${base_path}/UAE/conf/amiberry.conf"
+
+    if [[ $arch == "arm64" ]]; then
+
+        # Set Amiberry-Lite as default for ARM
+        # GGG Removed due to AROS boot issues on amiberry-lite 5.9.1
+        #sed -i 's/#abe_use_amiberry_lite=1/abe_use_amiberry_lite=1/' "${base_path}/bin/options.sh"
+
+    fi
 
     if [[ ! $(grep "${base_path}/bin/launch.sh" /root/.profile) ]]; then
 
@@ -368,11 +387,12 @@ if [[ $(which amiberry) ]]; then
 
     fi
 
-    #write_log install "Executing ${application_path}/boot-handler.sh"
-
     pushd "${base_path}/bin"
     "./boot-handler.sh"
     popd
+
+    # Give boot-handler a moment to update?
+    sleep 3
 
     echo
     echo "Installation appears to have been successful!"
