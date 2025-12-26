@@ -57,7 +57,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 ## Installation (Raspberry Pi) ##
 
 1. Use the Raspberry Pi Imager to create a Raspberry Pi OS Lite (64-bit) Debian Trixie image with no desktop environment. 
-    - Create a regular user, and include any customisations as required. 
+    - Create a regular user, and include any customisations as required for your environment. 
 2. Boot the image and login as the regular (non-root) user. Enter the command below to set a password for the root account:
 
     sudo passwd root
@@ -77,8 +77,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
     - Hit F12 to open the Amiberry GUI, go to Paths and select "Rescan Paths" to include the new ROMs in Amiberry.
     - To change the default config or enable Amiberry-Lite, Quit Amiberry and hit 'e' to edit user options. When finished, Ctrl+S to save and Ctrl+Q to quit the editor. 
 
-### CAVEATS on Raspberry Pi ###
-    
+#### CAVEATS on Raspberry Pi ####
     - Raspberry Pi does not support the rEFInd boot selector, there is no boot-time Amiga config selection available.
     - AmiBootEnv will currently only launch the default config specified in the user options file. 
     - Raspberry Pi 5 or better is recommended for the best emulation experience. 
@@ -94,7 +93,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 
     rm \*.\*
 
-3. Repeat the wget and bash commands at Installation step 3. 
+3. Repeat the wget and bash commands from the initial installation. 
 
 NB: This will overwrite options.sh and the included Amiberry configs. Additional user configs should not be affected. 
 
