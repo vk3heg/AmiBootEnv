@@ -362,7 +362,9 @@ if [[ $(which amiberry) || $(which amiberry-lite) ]]; then
 
         # Set Amiberry-Lite as default for ARM
         # GGG Removed due to AROS boot issues on amiberry-lite 5.9.1
+        echo
         #sed -i 's/#abe_use_amiberry_lite=1/abe_use_amiberry_lite=1/' "${base_path}/bin/options.sh"
+
 
     fi
 
