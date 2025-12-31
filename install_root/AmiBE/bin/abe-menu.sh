@@ -33,40 +33,43 @@ SELECTION_RESET="\033[0m"
 term_rows=$(tput lines)
 term_cols=$(tput cols)
 
-center_line() {
-    local text="$1"
-    # +1 for rounding up, extra spaces to clear keyboard mashing
-    printf "%*s%s    \n" $(( (term_cols - ${#text} + 1) / 2 )) "" "$text"
+center_line()
+{
+    local text="${1}"
+    # +1 for rounding up, blank out whole line
+    local pad_count=$(( (term_cols - ${#text} + 1) / 2 ))
+    printf "%*s%s%*s\n" $pad_count "" "${text}" $(( pad_count - 1 ))
 }
 
-center_line_selected() {
+center_line_selected()
+{
+    local text="[ ${1} ]"
+    # +1 for rounding up, blank out whole line
+    local pad_count=$(( (term_cols - ${#text} + 1) / 2 ))
+    printf "%*s${SELECTION_COLOUR}%s${SELECTION_RESET}%*s\n" $(( pad_count + 1 )) "" "${text}" $(( pad_count - 2 ))
+}
+
+right_line()
+{
     local text="$1"
-    printf "%*s${SELECTION_COLOUR}[ %s ]${SELECTION_RESET}\n" $(( ((term_cols - ${#text} + 1) / 2) - 1 )) "" "$text"
+    printf "%*s%s" $(( (term_cols - ${#text} - 1) )) "" "${text}"
 }
 
 
-right_line() {
-    local text="$1"
-    printf "%*s%s" $(( (term_cols - ${#text} - 1) )) "" "$text"
-}
-
-
-draw_menu() {
-    # Clear causes flicker, so be selective with blanking
-    # clear
+draw_menu()
+{
+    # Clear causes flicker, so only blank whitespace
     tput home
 
     local menu_height=$((menu_length + 2))
     local start_row=$(( ((term_rows - menu_height) / 2) - 1 ))
 
     for ((i=0; i<start_row; i++)); do
-        # Spaces to clear keyboard mashing
-        echo "      "
+        printf "%*s\n" $term_cols
     done
 
     # A menu title could go here if we wanted one
     #center_line "AmiBootEnv"
-    #echo
 
     for ((i=0; i<menu_length; i++)); do
         if [[ $i -eq $selected_index ]]; then
@@ -77,7 +80,7 @@ draw_menu() {
     done
 
     for ((i=$((start_row + menu_height)) ; i<term_rows; i++)); do
-        echo "      "
+        printf "%*s\n" $term_cols
     done
 
     right_line "${remaining}"
