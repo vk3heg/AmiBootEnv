@@ -32,7 +32,8 @@ abe_use_postboot_selector=1
 # Default action when Amiberry exits
 # Valid options are: respawn, reboot, shutdown, shutdown_on_clean
 # shutdown_on_clean will attempt to confirm Amiberry exited cleanly before shutting down, otherwise respawn if it crashed.
-# This can be used to shutdown the PC from any hosted system that can close Amiberry, eg AROS.
+# This requires Amiberry logging enabled to path /AmiBE/var/log/amiberry.log.
+# shutdown_on_clean can also be used to shutdown the PC from any hosted system that can close Amiberry, eg AROS.
 # Default action is respawn
 #
 abe_amiberry_exit_action=respawn

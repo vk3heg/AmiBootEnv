@@ -7,7 +7,7 @@
 # For editable options, see options.sh
 
 release=1
-application_version="0.5.10"
+application_version="0.5.11"
 
 # Installation vars
 application_name_cc="AmiBootEnv"
