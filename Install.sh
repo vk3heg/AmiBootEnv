@@ -47,7 +47,7 @@ install_package ()
 {
     echo "Installing ${1}.."
     #write_log install "Installing package ${1}"
-    apt-get --assume-yes -qq install $1
+    apt-get --assume-yes -qq --allow-downgrades install "${1}"
 }
 
 create_config_stub ()
@@ -69,39 +69,66 @@ create_config_stub ()
     echo "screenshot_dir=${uae_base_path}/screenshots/" >> $1
 }
 
+
 install_amiberry_flavour ()
 {
     # package_name must be amiberry or amiberry-lite
     package_name=${1:-"amiberry"}
-    debfile=$(ls -vr ./${package_name}_*${arch}.deb | head -1)
+    package_version="${2}"
 
-    if [[ ! -f $debfile ]]; then
+    if [[ -n "${package_version}" ]]; then
 
-        zipfile=$(ls -vr ./${package_name}-v*${arch}.zip | head -1)
+        debfile="./${package_name}_${package_version}_${arch}.deb"
 
-        if [[ ! -f $zipfile ]]; then
+        if [[ ! -f $debfile ]]; then
 
-            wget_url=$(curl -s https://api.github.com/repos/BlitterStudio/${package_name}/releases/latest | grep browser_download_url.*debian-${debian_codename}-${arch} | cut -d : -f 2,3 | tr -d " \"")
-            echo "Fetching ${package_name} installer from ${wget_url}"
+            zipfile="./${package_name}-v${package_version}-debian-${debian_codename}-${arch}.zip"
 
-            wget "${wget_url}"
+            if [[ ! -f $zipfile ]]; then
 
-            zipfile=$(ls -vr ./${package_name}-v*${arch}.zip | head -1)
+                wget_url="https://github.com/BlitterStudio/${package_name}/releases/download/v${package_version}/${package_name}-v${package_version}-debian-${debian_codename}-${arch}.zip"
+
+                echo "Fetching ${package_name} installer from ${wget_url}"
+                wget "${wget_url}"
+
+            fi
+
+            if [[ -f $zipfile ]]; then
+
+                unzip -o $zipfile
+
+            fi
 
         fi
 
-        if [[ -f $zipfile ]]; then
-
-            unzip -o $zipfile
-
-        else
-
-            echo "${package_name} download failed."
-
-        fi
+    else
 
         debfile=$(ls -vr ./${package_name}_*${arch}.deb | head -1)
 
+        if [[ ! -f $debfile ]]; then
+
+            zipfile=$(ls -vr ./${package_name}-v*${arch}.zip | head -1)
+
+            if [[ ! -f $zipfile ]]; then
+
+                wget_url=$(curl -s https://api.github.com/repos/BlitterStudio/${package_name}/releases/latest | grep browser_download_url.*debian-${debian_codename}-${arch} | cut -d : -f 2,3 | tr -d " \"")
+
+                echo "Fetching ${package_name} installer from ${wget_url}"
+                wget "${wget_url}"
+
+                zipfile=$(ls -vr ./${package_name}-v*${arch}.zip | head -1)
+
+            fi
+
+            if [[ -f $zipfile ]]; then
+
+                unzip -o $zipfile
+
+            fi
+
+            debfile=$(ls -vr ./${package_name}_*${arch}.deb | head -1)
+
+        fi
     fi
 
     if [[ -f $debfile ]]; then
@@ -114,6 +141,7 @@ install_amiberry_flavour ()
 
     fi
 }
+
 
 
 # Installation
@@ -154,9 +182,10 @@ fi
 # Add contrib repo
 if [[ ! $(grep -E "^deb .* contrib" /etc/apt/sources.list) ]]; then
 
-    #write_log install "Adding contrib to /etc/apt/sources.list"
+    # Add contrib to sources.list
     sed -r -i 's/^deb(.*)$/deb\1 contrib/g' /etc/apt/sources.list
     apt-get update
+    #apt-get upgrade
 
 fi
 
@@ -263,6 +292,7 @@ for archive in "${uae_base_path}/harddrives/"*.zip; do
 
 done
 
+# Platform-specific customisations
 # Check for EFI System Partition and install rEFInd if found
 if [[ -d "/boot/efi/EFI" ]]; then
 
@@ -308,17 +338,23 @@ if [[ -d "/boot/efi/EFI" ]]; then
 
     fi
 
-elif [[ $arch == "amd64" ]]; then
+elif [[ "${arch}" == "amd64" ]]; then
 
-    # Otherwise create an initial default config
-    echo "EFI path not found. Setting GRUB and launcher defaults.."
-    cp "${uae_base_path}/conf/AROS.uae" "${uae_base_path}/conf/default.uae"
+    # default.uae is not required as of 0.5.10
+    #cp "${uae_base_path}/conf/AROS.uae" "${uae_base_path}/conf/default.uae"
 
     # Set GRUB timeout and enable bootsplash
+    echo "EFI path not found. Setting GRUB defaults.."
     sed -i -r 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=3/' /etc/default/grub
     sed -i -r 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="splash quiet"/' /etc/default/grub
 
     /sbin/update-grub
+
+elif [[ "${arch}" == "arm64" ]]; then
+
+    # Enable splash screen for RPi
+    install_package rpd-plym-splash
+    sed -i /boot/firmware/cmdline.txt -e "s/$/ quiet splash plymouth.ignore-serial-consoles/"
 
 fi
 
@@ -338,17 +374,15 @@ if [[ ! $(which amiberry) ]]; then
 
 fi
 
-if [[ ! $(which amiberry-lite) ]]; then
+# GGG Force install 5.8.11 due to issues with current 5.9.1
+#if [[ ! $(which amiberry-lite) ]]; then
 
-    install_amiberry_flavour amiberry-lite
+    install_amiberry_flavour amiberry-lite "5.8.11"
 
-fi
+#fi
 
 
 if [[ $(which amiberry) || $(which amiberry-lite) ]]; then
-
-    # Now using roms matched to AROS HD image. Different versions may break AROS.
-    # cp -r /usr/share/amiberry/roms/* "${rom_path}/"
 
     chmod -R 777 "${base_path}"
 
@@ -358,18 +392,22 @@ if [[ $(which amiberry) || $(which amiberry-lite) ]]; then
     create_config_stub "/root/.config/amiberry-lite/amiberry.conf"
     create_config_stub "${base_path}/UAE/conf/amiberry.conf"
 
-    if [[ $arch == "arm64" ]]; then
+    if [[ "${arch}" == "arm64" ]]; then
 
-        # Set Amiberry-Lite as default for ARM
-        # GGG Removed due to AROS boot issues on amiberry-lite 5.9.1
-        echo
-        #sed -i 's/#abe_use_amiberry_lite=1/abe_use_amiberry_lite=1/' "${base_path}/bin/options.sh"
+        if [[ $(which amiberry-lite) ]]; then
+
+            # Set Amiberry-Lite as default for ARM
+            sed -i 's/#abe_use_amiberry_lite=1/abe_use_amiberry_lite=1/' "${base_path}/bin/options.sh"
+            # If this whole section is commented out, then an echo will prevent the script from stopping here
+            echo
+
+        fi
 
     fi
 
     if [[ ! $(grep "${base_path}/bin/launch.sh" /root/.profile) ]]; then
 
-        # Warning. Running from profile as new process (&) may be nice but will break ctrl+c to exit
+        # NB: Running from profile as new process (&) may be nice but will break ctrl+c to exit
         echo "" >> /root/.profile
         echo "# Added by ${application_name}" >> /root/.profile
         echo "clear" >> /root/.profile
@@ -392,7 +430,7 @@ if [[ $(which amiberry) || $(which amiberry-lite) ]]; then
     "./boot-handler.sh"
     popd
 
-    # Give boot-handler a moment to update?
+    # Give boot-handler a moment to update..
     sleep 3
 
     echo
