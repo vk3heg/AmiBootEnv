@@ -17,6 +17,7 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 - Detects Greaseweazle floppy drives before starting emulation.
 - Detects hard drives (both directories and native devices) before starting emulation.
 - Integrates the rEFInd boot manager on UEFI systems to provide an Amiga boot selector.
+- Simple post-boot config selector for non-UEFI systems (x86-64 and RPi)
 - Includes a basic AROS system with Directory Opus for importing ROMs, ADFs, HDFs etc. from removable storage "The Amiga Way".
 - Based on Debian Linux and the excellent Amiberry emulator.
 
@@ -77,11 +78,9 @@ AmiBootEnv was inspired by the rEFInd boot manager, Rob Smith's amazing FloppyBr
 
 #### Caveats with Raspberry Pi: ####
 
-- Raspberry Pi does not support the rEFInd boot selector, there is no pre-boot Amiga config selection. Instead, the post-boot selector menu will appear before starting emulation. 
-- Amiberry-Lite is recommended for ARM. Due to issues with booting AROS, regular Amiberry is still the default. Quit Amiberry and (E)dit options to set the default version.
+- Raspberry Pi does not support the rEFInd boot selector. Instead, the post-boot selector menu will appear before starting emulation. 
 - Raspberry Pi 5 or better is recommended for the best emulation experience. 
-- AROS on Raspberry Pi is sloooooow.
-
+- Amiberry-Lite is the default emulator, full Amiberry is available as an option.
 
 
 ## Upgrading ##
