@@ -265,7 +265,7 @@ echo "Patching scripts for non-root operation..."
 # main.sh - use patched version that fixes exit menu and adds sudo
 if [[ -f "${my_path}/patches/main.sh" ]]; then
     echo "Installing patched main.sh (fixes Terminal/Options menu + sudo)..."
-    cp "${my_path}/patches/main.sh" "${base_path}/bin/main.sh"
+    cp "${my_path}/main.sh" "${base_path}/bin/main.sh"
 else
     # Fallback to sed patches if patched file not found
     sed -i 's|/sbin/shutdown -r now|sudo /sbin/shutdown -r now|g' "${base_path}/bin/main.sh"
