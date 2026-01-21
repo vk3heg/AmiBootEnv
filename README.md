@@ -3,7 +3,8 @@ Overview
 
 This document describes modifications made to AmiBootEnv to support running as a non-root user after installation. The original Install.sh runs Amiberry as root; the modified Install-nonroot.sh creates a dedicated amiberry user and runs the emulator with reduced privileges.
 
-Issues Identified
+Issues Identified after the changes.
+
 Issue 1: Exit Menu Options Not Working
 
 Affected Options: "Edit AmiBootEnv Options" and "Terminal"
